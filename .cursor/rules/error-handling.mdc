@@ -1,0 +1,22 @@
+---
+description: Свои исключения и понятный текст без traceback
+globs: "**/*.py"
+alwaysApply: false
+---
+
+# Ошибки
+
+Человеку — короткое сообщение на русском. Трассировка остаётся в логе.
+
+- `InvalidInputError` — битый JSON, не объект, чужие или неверные поля.
+- `LLMError` — нет ключа, таймаут, статус API.
+- `OutputCheckError` — ответ модели не прошёл проверку фактов или длин.
+- Пустой `except` и `except Exception: pass` запрещены.
+- Повторять запрос можно при таймауте, обрыве сети и статусах 429, 500, 502, 503, 504.
+- Отказ 4xx, кроме 429, повторно не отправлять.
+
+```python
+except OutputCheckError as exc:
+    print(exc.message, file=sys.stderr)
+    return 4
+```
