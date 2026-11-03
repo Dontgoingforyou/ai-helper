@@ -62,9 +62,8 @@ def _fit_title(title: str, product: ProductInput, corpus: str) -> str:
     return _trim_words(fallback, TITLE_MAX)
 
 
-def _fit_description(model_text: str, product: ProductInput, corpus: str) -> str:
-    parts = _usable_parts(model_text, product, corpus)
-    parts.extend(_usable_parts(product.description, product, corpus))
+def _fit_description(_model_text: str, product: ProductInput, corpus: str) -> str:
+    parts = _usable_parts(product.description, product, corpus)
     parts.extend(_spec_lines(product))
     return _assemble(parts, DESCRIPTION_MIN, DESCRIPTION_MAX)
 
@@ -120,7 +119,17 @@ def _usable_parts(text: str, product: ProductInput, corpus: str) -> list[str]:
 
 
 def _sentences(text: str) -> list[str]:
-    return [part.strip() for part in _SENTENCE.split(text.strip()) if part.strip()]
+    parts: list[str] = []
+    for line in text.splitlines():
+        cleaned = line.strip().lstrip("-•").strip()
+        for part in _SENTENCE.split(cleaned):
+            part = part.strip()
+            if not part or part.endswith(":"):
+                continue
+            if part[-1] not in ".!?":
+                part = f"{part}."
+            parts.append(part)
+    return parts
 
 
 def _text_ok(text: str, product: ProductInput, corpus: str) -> bool:

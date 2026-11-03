@@ -44,7 +44,7 @@ def test_fixes_length_and_industry_without_second_call() -> None:
     draft = valid_card(product).model_copy(
         update={
             "seo_title": "М" * 71,
-            "seo_description": "Слишком коротко.",
+            "seo_description": "Прибороснащён. Слишком коротко.",
             "commercial_block": "Подходит для лабораторий и котельных.",
         }
     )
@@ -57,6 +57,8 @@ def test_fixes_length_and_industry_without_second_call() -> None:
     assert 800 <= len(card.seo_description) <= 1200
     assert "лаборатор" not in card.commercial_block.casefold()
     assert "котельн" not in card.commercial_block.casefold()
+    assert "Прибороснащён" not in card.seo_description
+    assert "Прибор предназначен для измерения избыточного давления." in card.seo_description
 
 
 def test_falls_back_when_model_returns_no_json() -> None:
